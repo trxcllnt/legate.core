@@ -45,7 +45,7 @@ jobs:
         DEFAULT_CONDA_ENV: legate
         PYTHONDONTWRITEBYTECODE: 1
         SCCACHE_REGION: us-east-2
-        SCCACHE_BUCKET: rapids-sccache-east
+        SCCACHE_BUCKET: ${{ secrets.PERSONAL_ACCESS_TOKEN && 'rapids-sccache-devs' || 'rapids-sccache-east' }}
         SCCACHE_S3_KEY_PREFIX: legate-cunumeric-dev
         GH_TOKEN: "${{ secrets.PERSONAL_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}"
         GITHUB_TOKEN: "${{ secrets.PERSONAL_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}"

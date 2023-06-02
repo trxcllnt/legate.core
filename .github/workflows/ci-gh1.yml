@@ -5,13 +5,31 @@ concurrency:
   cancel-in-progress: true
 
 on:
+  pull_request:
   push:
     branches:
       - "pull-request/[0-9]+"
       - "branch-*"
 
 jobs:
+  check-event:
+    name: Check PR Event
+    runs-on: ubuntu-latest
+    outputs:
+      ok: ${{ steps.check_pr_event.outputs.ok }}
+    steps:
+      - id: check_pr_event
+        name: Check PR Event
+        shell: bash
+        run: |
+          [[ '${{ github.event_name }}' == 'push' && '${{ github.repository }}' == 'nv-legate/legate.core' ]] || \
+          [[ '${{ github.event_name }}' == 'pull_request' && '${{ github.repository }}' != 'nv-legate/legate.core' ]] \
+          && echo "ok=true"  | tee -a $GITHUB_OUTPUT \
+          || echo "ok=false" | tee -a $GITHUB_OUTPUT;
+
   build:
+    needs: check-event
+    if: needs.check-event.outputs.ok == 'true'
     permissions:
       id-token: write # This is required for configure-aws-credentials
       contents: read  # This is required for actions/checkout
